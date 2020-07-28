@@ -12,6 +12,7 @@ import {
   Container,
 } from '@material-ui/core';
 import { Form, Formik, Field, useField } from 'formik';
+import { object, string, number, boolean, array, mixed } from 'yup';
 
 const initialValues = {
   fullName: '',
@@ -28,8 +29,29 @@ export const FormikDemo = () => {
       <Card>
         <CardContent>
           <Typography variant="h4">New Account</Typography>
-          <Formik initialValues={initialValues} onSubmit={() => {}}>
-            {({ values }) => (
+          <Formik
+            validationSchema={object({
+              fullName: string()
+                .required('Name is mandatory!!!')
+                .min(2)
+                .max(100),
+              initialInvestment: number().required().min(100),
+              dependents: number().required().min(0).max(5),
+              acceptedTermsAndConditions: boolean().oneOf([true]),
+              investmentRisk: array(
+                string().oneOf(['High', 'Medium', 'Low'])
+              ).min(1),
+              commentAboutInvestmentRisk: mixed().when('investmentRisk', {
+                is: (investmentRisk) =>
+                  investmentRisk.find((el) => el === 'High'),
+                then: string().required().min(20).max(100),
+                otherwise: string().min(20).max(100),
+              }),
+            })}
+            initialValues={initialValues}
+            onSubmit={() => {}}
+          >
+            {({ values, errors }) => (
               <Form>
                 <Box marginBottom={2}>
                   <FormGroup>
@@ -47,6 +69,7 @@ export const FormikDemo = () => {
                   </FormGroup>
                 </Box>
                 <Box marginBottom={2}>
+                  <label>Select the risk you want to take:</label>
                   <FormGroup>
                     <MyCheckbox
                       name="investmentRisk"
@@ -98,6 +121,7 @@ export const FormikDemo = () => {
                     />
                   </FormGroup>
                 </Box>
+                <pre>{JSON.stringify(errors, null, 4)}</pre>
                 <pre>{JSON.stringify(values, null, 4)}</pre>
               </Form>
             )}
