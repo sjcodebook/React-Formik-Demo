@@ -1,6 +1,14 @@
 import React from 'react';
-import { Card, CardContent, Typography } from '@material-ui/core';
-import { Form, Formik, Field } from 'formik';
+import {
+  Card,
+  CardContent,
+  TextField,
+  Typography,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
+} from '@material-ui/core';
+import { Form, Formik, Field, useField } from 'formik';
 
 const initialValues = {
   fullName: '',
@@ -19,21 +27,35 @@ export const FormikDemo = () => {
         <Formik initialValues={initialValues} onSubmit={() => {}}>
           {({ values }) => (
             <Form>
-              <Field name="fullName" />
-              <Field name="initialInvestment" type="number" />
-              <Field name="investmentRisk" value="High" type="checkbox" />
-              <Field name="investmentRisk" value="Medium" type="checkbox" />
-              <Field name="investmentRisk" value="Low" type="checkbox" />
-              <Field name="commentAboutInvestmentRisk" as="textarea" />
-              <Field name="dependents" as="select">
-                <option value={0}>0</option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-                <option value={3}>3</option>
-                <option value={4}>4</option>
-                <option value={5}>5</option>
+              <Field name="fullName" as={TextField} label="Full Name" />
+              <Field
+                name="initialInvestment"
+                type="number"
+                as={TextField}
+                label="Initial Investment"
+              />
+              <MyCheckbox name="investmentRisk" value="High" label="High" />
+              <MyCheckbox name="investmentRisk" value="Medium" label="Medium" />
+              <MyCheckbox name="investmentRisk" value="Low" label="Low" />
+              <Field
+                name="commentAboutInvestmentRisk"
+                as={TextField}
+                multiline
+                rows={3}
+                rowsMax={10}
+              />
+              <Field name="dependents" as={TextField} select>
+                <MenuItem value={0}>0</MenuItem>
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={2}>2</MenuItem>
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={4}>4</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
               </Field>
-              <Field name="acceptedTermsAndConditions" type="checkbox" />
+              <MyCheckbox
+                name="acceptedTermsAndConditions"
+                label="Accept Terms And Conditions"
+              />
               <pre>{JSON.stringify(values, null, 4)}</pre>
             </Form>
           )}
@@ -42,3 +64,18 @@ export const FormikDemo = () => {
     </Card>
   );
 };
+
+export function MyCheckbox(props) {
+  const [field] = useField({
+    name: props.name,
+    type: 'checkbox',
+    value: props.value,
+  });
+
+  return (
+    <FormControlLabel
+      control={<Checkbox {...props} {...field} />}
+      label={props.label}
+    />
+  );
+}
