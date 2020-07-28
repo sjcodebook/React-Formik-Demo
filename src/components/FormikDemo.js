@@ -10,8 +10,9 @@ import {
   FormGroup,
   Box,
   Container,
+  Button,
 } from '@material-ui/core';
-import { Form, Formik, Field, useField } from 'formik';
+import { Form, Formik, Field, useField, ErrorMessage } from 'formik';
 import { object, string, number, boolean, array, mixed } from 'yup';
 
 const initialValues = {
@@ -49,13 +50,20 @@ export const FormikDemo = () => {
               }),
             })}
             initialValues={initialValues}
-            onSubmit={() => {}}
+            onSubmit={(values, formikHelpers) => {
+              return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  resolve();
+                }, 2000);
+              });
+            }}
           >
-            {({ values, errors }) => (
+            {({ values, errors, isSubmitting, isValidating }) => (
               <Form>
                 <Box marginBottom={2}>
                   <FormGroup>
                     <Field name="fullName" as={TextField} label="Full Name" />
+                    <ErrorMessage name="fullName" />
                   </FormGroup>
                 </Box>
                 <Box marginBottom={2}>
@@ -66,6 +74,7 @@ export const FormikDemo = () => {
                       as={TextField}
                       label="Initial Investment"
                     />
+                    <ErrorMessage name="initialInvestment" />
                   </FormGroup>
                 </Box>
                 <Box marginBottom={2}>
@@ -83,6 +92,7 @@ export const FormikDemo = () => {
                     />
                     <MyCheckbox name="investmentRisk" value="Low" label="Low" />
                   </FormGroup>
+                  <ErrorMessage name="investmentRisk" />
                 </Box>
                 <Box marginBottom={2}>
                   <FormGroup>
@@ -95,6 +105,7 @@ export const FormikDemo = () => {
                       label="Comment About Investment Risk"
                     />
                   </FormGroup>
+                  <ErrorMessage name="commentAboutInvestmentRisk" />
                 </Box>
                 <Box marginBottom={2}>
                   <FormGroup>
@@ -104,6 +115,7 @@ export const FormikDemo = () => {
                       select
                       label="Dependents"
                     >
+                      <MenuItem value={-1}>Select</MenuItem>
                       <MenuItem value={0}>0</MenuItem>
                       <MenuItem value={1}>1</MenuItem>
                       <MenuItem value={2}>2</MenuItem>
@@ -111,6 +123,7 @@ export const FormikDemo = () => {
                       <MenuItem value={4}>4</MenuItem>
                       <MenuItem value={5}>5</MenuItem>
                     </Field>
+                    <ErrorMessage name="dependents" />
                   </FormGroup>
                 </Box>
                 <Box marginBottom={2}>
@@ -119,8 +132,14 @@ export const FormikDemo = () => {
                       name="acceptedTermsAndConditions"
                       label="Accept Terms And Conditions"
                     />
+                    <ErrorMessage name="acceptedTermsAndConditions" />
                   </FormGroup>
                 </Box>
+
+                <Button type="submit" disabled={isSubmitting || isValidating}>
+                  Submit
+                </Button>
+
                 <pre>{JSON.stringify(errors, null, 4)}</pre>
                 <pre>{JSON.stringify(values, null, 4)}</pre>
               </Form>
